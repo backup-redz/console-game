@@ -1,0 +1,93 @@
+findOne = 
+dbo.collection("customers").findOne({}, function(err, result) {
+    if (err) throw err;
+    console.log(result.name);
+});
+
+
+find =
+dbo.collection("customers").find({}).toArray(function(err, result) {
+	if (err) throw err;
+	console.log(result);
+});
+
+sort the query = 
+var mysort = { name: 1 };
+dbo.collection("customers").find().sort(mysort).toArray(function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    db.close();
+});
+
+{ name: 1 } // ascending
+{ name: -1 } // descending
+
+
+
+insertOne = 
+var myobj = { name: "Company Inc", address: "Highway 37" };
+dbo.collection("customers").insertOne(myobj, function(err, res) {
+    if (err) throw err;
+    console.log("1 document inserted");
+});
+
+insertMany = 
+var myobj = [
+    { name: 'John', address: 'Highway 71'},
+    { name: 'Peter', address: 'Lowstreet 4'},
+    { name: 'Amy', address: 'Apple st 652'},
+    { name: 'Hannah', address: 'Mountain 21'}
+];
+dbo.collection("customers").insertMany(myobj, function(err, res) {
+    if (err) throw err;
+    console.log("Number of documents inserted: " + res.insertedCount);
+    db.close();
+});
+
+we can use specific query for every request  like ....dbo.collection("customers").find(   {address: "Park Lane 38"}   )
+the query can contain regex :   var query = { address: /^S/ };
+
+
+deleteOne = 
+var myquery = { address: 'Mountain 21' };
+dbo.collection("customers").deleteOne(myquery, function(err, obj) {
+    if (err) throw err;
+    console.log("1 document deleted");
+    db.close();
+});
+
+deleteMany = 
+var myquery = { address: /^O/ };
+dbo.collection("customers").deleteMany(myquery, function(err, obj) {
+    if (err) throw err;
+    console.log(obj.result.n + " document(s) deleted");
+    db.close();
+});
+
+updateOne = 
+var myquery = { address: "Valley 345" };
+var newvalues = { $set: {name: "Mickey", address: "Canyon 123" } };
+dbo.collection("customers").updateOne(myquery, newvalues, function(err, res) {
+    if (err) throw err;
+    console.log("1 document updated");
+    db.close();
+});
+
+the keyword $set is used to change only specifics fields
+
+updateMany = 
+var myquery = { address: /^S/ };
+var newvalues = {$set: {name: "Minnie"} };
+dbo.collection("customers").updateMany(myquery, newvalues, function(err, res) {
+    if (err) throw err;
+    console.log(res.result.nModified + " document(s) updated");
+    db.close();
+});
+
+you can limit the numbers of your query results by using "limit()"
+dbo.collection("customers").find().limit(5).toArray(function(err, result) {
+    if (err) throw err;
+    console.log(result);
+    db.close();
+});
+

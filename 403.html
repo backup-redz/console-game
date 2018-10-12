@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>403 forbidden</title>
+    <link rel="stylesheet" href="error.css">
+</head>
+
+<body>
+    <div class="couleur">
+        <p class="marks">!</p>
+    </div>
+    <div class="couleur">
+        <p class="marks">!</p>
+    </div>
+    <h1>"Sapristi ! The file that you attempted to connect has a restricted access !"</h1>
+    <p style="color: red;">403</p>
+    <p class="smiley">(҂⌣̀_⌣́)</p>
+    <script type="text/javascript">
+    function entierAleatoire(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function toRad(number) {
+        return (number * Math.PI) / 180;
+    }
+    for (let i = 0; i < document.getElementsByClassName("couleur").length; i++) {
+        document.getElementsByClassName("couleur")[i].style.backgroundColor = `RGB(${entierAleatoire(0,255)},${entierAleatoire(0,255)},${entierAleatoire(0,255)})`;
+    }
+
+    const posX = [
+        entierAleatoire(50, window.innerWidth - 50),
+        entierAleatoire(50, window.innerWidth - 50)
+    ];
+
+    const posY = [
+        entierAleatoire(50, window.innerHeight - 50),
+        entierAleatoire(50, window.innerHeight - 50)
+    ];
+
+    const gros = [
+        100,
+        150
+    ];
+
+    const mode = [
+        'M',
+        'D'
+    ];
+    const angles = [
+        toRad(entierAleatoire(30, 60)),
+        toRad(entierAleatoire(120, 150)),
+        toRad(entierAleatoire(210, 240)),
+        toRad(entierAleatoire(300, 330)),
+        toRad(entierAleatoire(30, 60)),
+        toRad(entierAleatoire(120, 150)),
+        toRad(entierAleatoire(210, 240)),
+        toRad(entierAleatoire(300, 330)),
+        toRad(entierAleatoire(30, 60)),
+        toRad(entierAleatoire(120, 150)),
+        toRad(entierAleatoire(210, 240)),
+        toRad(entierAleatoire(300, 330))
+    ];
+    const angle = [
+        angles[entierAleatoire(0, 11)],
+        angles[entierAleatoire(0, 11)]
+    ];
+    const dirX = [
+        Math.round(Math.cos(angle[0])) * 4,
+        Math.round(Math.cos(angle[1])) * 4
+    ];
+
+    const dirY = [
+        Math.round(Math.sin(angle[0])) * 4,
+        Math.round(Math.sin(angle[1])) * 4
+    ];
+
+    const bol = [
+        true,
+        true
+    ];
+
+    setInterval(() => {
+        for (let i = 0; i < document.getElementsByClassName("couleur").length; i++) {
+            document.getElementsByClassName("couleur")[i].style.left = posX[i] + "px";
+            document.getElementsByClassName("couleur")[i].style.top = posY[i] + "px";
+            document.getElementsByClassName("couleur")[i].style.width = gros[i] + "px";
+            document.getElementsByClassName("couleur")[i].style.height = gros[i] + "px";
+            document.getElementsByClassName("couleur")[i].style.fontSize = gros[i] - 3 + "px";
+            if (gros[i] < 50) {
+                mode[i] = 'M';
+            } else if (gros[i] > 170) {
+                mode[i] = 'D'
+            }
+
+            if (mode[i] === 'M') {
+                gros[i] += 4;
+            } else {
+                gros[i] -= 4;
+            }
+
+            posX[i] += dirX[i];
+            posY[i] += dirY[i];
+            let num = i;
+            let autre;
+            if (i === 1) {
+                autre = 0;
+            } else {
+                autre = 1;
+            }
+            if (posX[i] < 0) {
+                dirX[i] *= -1;
+                mode[i] = 'D';
+            }
+            if (posX[i] + gros[i] > window.innerWidth) {
+                dirX[i] *= -1;
+                mode[i] = 'D';
+            }
+            if (posY[i] < 0) {
+                dirY[i] *= -1;
+                mode[i] = 'D';
+            }
+            if (posY[i] + gros[i] > window.innerHeight) {
+                dirY[i] *= -1;
+                mode[i] = 'D';
+            }
+            let vec = {
+                x: (posX[0] + (gros[0] / 2)) - (posX[1] + (gros[0] / 2)),
+                y: (posY[0] + (gros[0] / 2)) - (posY[1] + (gros[0] / 2))
+            }
+            if (((vec.x * vec.x) + (vec.y * vec.y)) < (((gros[0] / 2) + (gros[1] / 2)) * ((gros[0] / 2) + (gros[1] / 2)))) {
+                if (bol[i]) {
+                    dirX[i] *= -1;
+                    dirY[i] *= -1;
+                    mode[i] = 'D';
+                    bol[num] = false;
+                    setTimeout(() => {
+                        bol[num] = true;
+                    }, 500);
+                }
+            }
+        }
+    }, 50);
+    </script>
+</body>
+
+</html>

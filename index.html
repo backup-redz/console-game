@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Titre de la page</title>
+    <link rel="stylesheet" href="main.css">
+    <script language="JavaScript" type="text/javascript" src="js/cryptico-js-master/dist/cryptico.browser.min.js"></script>
+    <script type="text/javascript" src="js/hashes.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+    let AESKEY;
+
+
+    function createAccount(userName, password) {
+        socket.emit("createAccount", {
+            user: CRYPTAGE.encrypt(userName).cipher,
+            passwd: CRYPTAGE.encrypt(new Hashes.SHA256().b64(password)).cipher
+        });
+        return "En cours...";
+    }
+
+    function login(userName, password) {
+        AESKEY = getAES32KeyFromString(new Hashes.SHA256().b64(password));
+        socket.emit("login", {
+            user: CRYPTAGE.encrypt(userName).cipher,
+            passwd: cryptico.encryptAESCBC(new Hashes.SHA256().b64(password), AESKEY)
+        });
+        return "En cours...";
+    }
+
+    function logout() {
+        socket.emit("logout");
+        return "En cours...";
+    }
+
+    function goTo(x, y) {
+        const pos = {
+            x: x,
+            y: y
+        };
+        socket.emit("goto", pos);
+        return "En cours...";
+    }
+
+    const go = {
+        up: function() {
+            socket.emit("move", "up");
+            return "En cours...";
+        },
+        down: function() {
+            socket.emit("move", "down");
+            return "En cours...";
+        },
+        left: function() {
+            socket.emit("move", "left");
+            return "En cours...";
+        },
+        right: function() {
+            socket.emit("move", "right");
+            return "En cours...";
+        }
+    };
+
+    const getPos = {
+    	x: function() {
+    		const pos = GAME({instruct: "mypos"}, "xdd");
+    		return pos.x;
+    	},
+    	y: function() {
+    		const pos = GAME({instruct: "mypos"}, "xdd");
+    		return pos.y;
+    	}
+    }
+
+
+
+
+
+
+    function entierAleatoire(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getAES32KeyFromString(str) {
+        const arr = [];
+        for (let i = 0; i < 32; i++) {
+            let num = str.charCodeAt(i % str.length);
+            while (num > 255) {
+                num -= 42;
+            }
+            arr.push(num);
+        }
+        return arr;
+    }
+
+    function genCrypt(KEY) {
+        return {
+            encrypt: function(PlainText) {
+                return cryptico.encrypt(PlainText, KEY);
+            }
+        }
+    }
+    //const myIp = "172.19.220.69";
+    const myIp = "192.168.43.51";
+    //const myIp = "localhost";
+    const socket = io.connect('http://' + myIp + ':8000/');
+
+    let CRYPTAGE;
+
+    socket.on("PUBLIC_KEY", key => {
+        CRYPTAGE = genCrypt(key);
+    });
+
+    socket.on('log', function(data) {
+        console.log(data);
+    });
+
+    socket.on("logout", () => {
+        window.location.reload();
+    });
+
+    socket.on("disconnect", () => {
+        window.location.reload();
+    });
+
+    socket.on("startGame", (obj) => {
+        GAME = genGame(cryptico.decryptAESCBC(obj.token, AESKEY), obj);
+        GAME("xd", "xd");
+    });
+
+    socket.on("instruct", (obj, key) => {
+        GAME(obj, cryptico.decryptAESCBC(key, AESKEY));
+    });
+
+    socket.on("available", (obj, str) => {
+        socket.emit("getNew", obj, str);
+    });
+
+    let GAME;
+    </script>
+    <script type="text/javascript" src="js/rough.min.js"></script>
+    <script type="text/javascript" src="js/class.js"></script>
+    <script type="text/javascript">
+    document.getElementById("canvas").width = window.innerWidth;
+    document.getElementById("canvas").height = window.innerHeight;
+    const game = genGame();
+    </script>
+</body>
+
+</html>
